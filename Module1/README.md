@@ -17,8 +17,11 @@
 Добейтесь работоспособности ваших приложений на следующих конфигурациях:
 
 .Net Core - Windows & Linux
+
 .Net Framework - Windows
+
 Mono - Windows & Linux
+
 Xamarin - Эмулятор
 
 Задание 3. Multitargeting
