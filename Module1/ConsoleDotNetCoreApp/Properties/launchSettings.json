@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleDotNetCoreApp": {
+      "commandName": "Project",
+      "commandLineArgs": "Sarah"
+    }
+  }
+}
