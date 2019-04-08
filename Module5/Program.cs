@@ -13,88 +13,83 @@ namespace Task5
 {
     public class Program
     {
-        static void Main(string[] args)
+        static CustomConfigurationSection customConfigurationSection = ConfigurationManager.GetSection("customConfiguration") as CustomConfigurationSection;
+
+        static void OnChanged(object obj, FileSystemEventArgs e)
         {
-            void OnChanged(object obj, FileSystemEventArgs e)
+            IEnumerable<RuleElement> allRulesForTheDestinationFolder =
+                from RuleElement rule in customConfigurationSection.Rules
+                where rule.DestinationFolder.Equals(Path.GetDirectoryName(e.FullPath))
+                select rule;
+
+            int step = 0;
+            foreach (RuleElement rule in allRulesForTheDestinationFolder)
             {
-                CustomConfigurationSection configurationSection = ConfigurationManager.GetSection("customConfiguration") as CustomConfigurationSection;
-                CurrentCulture culture = configurationSection.Culture;
-                Thread.CurrentThread.CurrentCulture = culture.Culture;
-                Thread.CurrentThread.CurrentUICulture = culture.Culture;
+                StringBuilder message = new StringBuilder();
+                int lastNumber = 1;
+                string originalFileName = Path.GetFileName(e.FullPath);
+                string modifiedFileName = originalFileName;
+                string absolutePathWithModifiedFileName = string.Empty;
 
-                IEnumerable<RuleElement> allRulesForTheDestinationFolder =
-                    from RuleElement rule in configurationSection.Rules
-                    where rule.DestinationFolder.Equals(Path.GetDirectoryName(e.FullPath))
-                    select rule;
-
-                int step = 0;
-                foreach (RuleElement rule in allRulesForTheDestinationFolder)
+                if (Regex.IsMatch(Path.GetFileNameWithoutExtension(e.FullPath), rule.Pattern))
                 {
-                    StringBuilder message = new StringBuilder();
-                    int lastNumber = 1;
-                    string originalFileName = Path.GetFileName(e.FullPath);
-                    string modifiedFileName = originalFileName;
-                    string absolutePathWithModifiedFileName = string.Empty;
+                    Console.WriteLine(Resource.Msg_RuleWorks, rule.Id);
 
-                    if (Regex.IsMatch(Path.GetFileNameWithoutExtension(e.FullPath), rule.Pattern))
+                    if (rule.AddEnumeration)
                     {
-                        Console.WriteLine(Resource.Msg_RuleWorks, rule.Id);
-
-                        if (rule.AddEnumeration)
+                        if (Directory.GetFiles(rule.DestinationFolder).Length > 1)
                         {
-                            if (Directory.GetFiles(rule.DestinationFolder).Length > 1)
+                            string[] allFileNames = Directory.GetFiles(rule.DestinationFolder);
+                            Array.Sort(allFileNames);
+                            string lastNumberedFileName = Path.GetFileName(allFileNames[allFileNames.Length - 2]);
+                            Match match = Regex.Match(lastNumberedFileName, "^[0-9]+");
+                            if (match.Success)
                             {
-                                string[] allFileNames = Directory.GetFiles(rule.DestinationFolder);
-                                Array.Sort(allFileNames);
-                                string lastNumberedFileName = Path.GetFileName(allFileNames[allFileNames.Length - 2]);
-                                Match match = Regex.Match(lastNumberedFileName, "^[0-9]+");
-                                if (match.Success)
-                                {
-                                    lastNumber = Convert.ToInt32(match.Value);
-                                    lastNumber++;
-                                }
+                                lastNumber = Convert.ToInt32(match.Value);
+                                lastNumber++;
                             }
-
-                            modifiedFileName = originalFileName.Insert(0, string.Concat(lastNumber, ") "));
                         }
 
-                        if (rule.AddTransferDate)
-                        {
-                            modifiedFileName = modifiedFileName.Insert(modifiedFileName.IndexOf('.'),
-                                    string.Format(Resource.Msg_WasAdded, DateTime.Now.ToLongDateString()));
-                        }
-
-                        if (rule.AddEnumeration == false && rule.AddTransferDate == false)
-                        {
-                            message.AppendFormat(Resource.Msg_FileCreatedOnThePath,
-                                originalFileName,
-                                rule.DestinationFolder);
-                        }
-
-                        absolutePathWithModifiedFileName = Path.Combine(rule.DestinationFolder, modifiedFileName);
-                        File.Move(e.FullPath, absolutePathWithModifiedFileName);
-
-                        message.AppendFormat(Resource.Msg_FileCreatedOnThePath,
-                            modifiedFileName,
-                            rule.DestinationFolder);
-                        Console.WriteLine(message.ToString());
+                        modifiedFileName = originalFileName.Insert(0, string.Concat(lastNumber, ") "));
                     }
-                    else
-                    {
-                        step++;
-                        if (step == allRulesForTheDestinationFolder.Count())
-                        {
-                            Console.WriteLine(Resource.Msg_NoRuleFound,
-                               e.Name,
-                               configurationSection.Rules.DefaultFolder);
 
-                            File.Move(e.FullPath, Path.Combine(configurationSection.Rules.DefaultFolder, e.Name));
-                        }
+                    if (rule.AddTransferDate)
+                    {
+                        modifiedFileName = modifiedFileName.Insert(modifiedFileName.IndexOf('.'),
+                                string.Format(Resource.Msg_WasAdded, DateTime.Now.ToLongDateString()));
+                    }
+
+                    if (rule.AddEnumeration == false && rule.AddTransferDate == false)
+                    {
+                        message.AppendFormat(Resource.Msg_FileCreatedOnThePath,
+                            originalFileName,
+                            rule.DestinationFolder);
+                    }
+
+                    absolutePathWithModifiedFileName = Path.Combine(rule.DestinationFolder, modifiedFileName);
+                    File.Move(e.FullPath, absolutePathWithModifiedFileName);
+
+                    message.AppendFormat(Resource.Msg_FileCreatedOnThePath,
+                        modifiedFileName,
+                        rule.DestinationFolder);
+                    Console.WriteLine(message.ToString());
+                }
+                else
+                {
+                    step++;
+                    if (step == allRulesForTheDestinationFolder.Count())
+                    {
+                        Console.WriteLine(Resource.Msg_NoRuleFound,
+                           e.Name,
+                           customConfigurationSection.Rules.DefaultFolder);
+
+                        File.Move(e.FullPath, Path.Combine(customConfigurationSection.Rules.DefaultFolder, e.Name));
                     }
                 }
             }
-
-            CustomConfigurationSection customConfigurationSection = ConfigurationManager.GetSection("customConfiguration") as CustomConfigurationSection;
+        }
+        static void Main(string[] args)
+        {
             CurrentCulture currentCulture = customConfigurationSection.Culture;
             Thread.CurrentThread.CurrentCulture = currentCulture.Culture;
             Thread.CurrentThread.CurrentUICulture = currentCulture.Culture;
