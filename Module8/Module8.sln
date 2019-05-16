@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Module8", "Module8\Module8.csproj", "{EECB0737-09D0-420E-8511-46BAA5FA6BD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDownloader", "SimpleDownloader\SimpleDownloader.csproj", "{148195BD-4F9C-45D9-B51A-A18ADF4ED518}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EECB0737-09D0-420E-8511-46BAA5FA6BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EECB0737-09D0-420E-8511-46BAA5FA6BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EECB0737-09D0-420E-8511-46BAA5FA6BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECB0737-09D0-420E-8511-46BAA5FA6BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{148195BD-4F9C-45D9-B51A-A18ADF4ED518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{148195BD-4F9C-45D9-B51A-A18ADF4ED518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{148195BD-4F9C-45D9-B51A-A18ADF4ED518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{148195BD-4F9C-45D9-B51A-A18ADF4ED518}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3D5549B2-0022-4947-9094-548C9CCCE709}
+	EndGlobalSection
+EndGlobal
